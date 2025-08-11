@@ -160,46 +160,6 @@
         }
       }
     },
-    "/task_status/{uuid}": {
-      "get": {
-        "summary": "Get Task Status",
-        "description": "获取任务状态",
-        "operationId": "get_task_status_task_status__uuid__get",
-        "parameters": [
-          {
-            "name": "uuid",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaskStatusResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/companies/{company_code}/packages/generate": {
       "post": {
         "summary": "Generate Company Packages",
@@ -696,33 +656,6 @@
           "uuid",
           "ai_results",
           "ai_status"
-        ]
-      },
-      "TaskStatusResponse": {
-        "properties": {
-          "uuid": {
-            "type": "string",
-            "title": "Uuid"
-          },
-          "ai_status": {
-            "type": "string",
-            "title": "Ai Status"
-          },
-          "ai_results": {
-            "type": "string",
-            "title": "Ai Results"
-          },
-          "created_at": {
-            "type": "string",
-            "title": "Created At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "uuid",
-          "ai_status",
-          "ai_results",
-          "created_at"
         ]
       },
       "UploadResponse": {

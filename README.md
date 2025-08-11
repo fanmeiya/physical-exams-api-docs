@@ -4,7 +4,7 @@
 
 **版本**: 1.0.0
 
-##  在线访问
+## 在线访问
 
 - **API文档**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
 - **OpenAPI规范**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json)
@@ -20,7 +20,7 @@ http://localhost:8000
 
 1. **上传PDF文件** (可选，体检报告解读需要)
 2. **提交健康问卷** (获得任务UUID)
-3. **查询任务状态和结果**
+3. **查询任务结果**
 4. **企业端生成套餐** (个性化推荐完成后)
 
 ## 主要接口
@@ -86,20 +86,7 @@ Content-Type: application/json
 }
 ```
 
-### 4. 查询任务状态
-```bash
-GET /task_status/{uuid}
-
-# 响应:
-{
-  "uuid": "550e8400-e29b-41d4-a716-446655440000",
-  "ai_status": "DONE",
-  "ai_results": "# 体检报告解读结果\n\n您的健康状况...",
-  "created_at": "2025-01-01 12:00:00"
-}
-```
-
-### 5. 获取体检报告解读结果
+### 4. 获取体检报告解读结果
 ```bash
 GET /interpret_result/{uuid}
 
@@ -110,7 +97,7 @@ GET /interpret_result/{uuid}
 }
 ```
 
-### 6. 获取个性化推荐结果
+### 5. 获取个性化推荐结果
 ```bash
 GET /recommend_result/{uuid}
 
@@ -121,7 +108,7 @@ GET /recommend_result/{uuid}
 }
 ```
 
-### 7. 企业端生成套餐
+### 6. 企业端生成套餐
 ```bash
 POST /companies/{company_code}/packages/generate
 
@@ -132,7 +119,7 @@ POST /companies/{company_code}/packages/generate
 }
 ```
 
-### 8. 查询企业套餐状态
+### 7. 查询企业套餐状态
 ```bash
 GET /companies/{company_code}/packages/status
 
@@ -143,7 +130,7 @@ GET /companies/{company_code}/packages/status
 }
 ```
 
-### 9. 企业健康数据看板
+### 8. 企业健康数据看板
 ```bash
 GET /companies/{company_code}/dashboard
 
@@ -153,7 +140,7 @@ GET /companies/{company_code}/dashboard
 }
 ```
 
-### 10. 企业套餐对比分析
+### 9. 企业套餐对比分析
 ```bash
 GET /companies/{company_code}/packages/compare
 
@@ -174,7 +161,7 @@ GET /companies/{company_code}/packages/compare
 | `ERROR` | 任务出错 |
 | `CANCELLED` | 任务被取消（用户提交了新任务） |
 
-##  完整使用示例
+## 完整使用示例
 
 ### 体检报告解读流程
 ```bash
@@ -195,8 +182,7 @@ curl -X POST http://localhost:8000/health_report \
     "age": 35
   }'
 
-# 3. 查询结果
-curl http://localhost:8000/task_status/{uuid}
+# 3. 查询解读结果
 curl http://localhost:8000/interpret_result/{uuid}
 ```
 
@@ -227,7 +213,7 @@ curl http://localhost:8000/companies/company_abc/packages/status
 curl http://localhost:8000/recommend_result/{uuid}
 ```
 
-## 健康问卷字段说明
+## 🏗️ 健康问卷字段说明
 
 ### 基础信息
 - `action`: 操作类型 ("interpret" | "recommend")
@@ -297,10 +283,3 @@ curl http://localhost:8000/recommend_result/{uuid}
 - **异步处理**: 后台任务处理
 - **数据存储**: 文件系统 + 内存缓存
 
-## 联系方式
-
-如有问题，请联系开发团队。
-
----
-
-*最后更新时间: 2025-08-11*
