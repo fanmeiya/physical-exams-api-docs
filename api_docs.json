@@ -6,10 +6,49 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/uploads": {
+      "post": {
+        "summary": "Upload Pdf",
+        "description": "上传体检PDF文件（每个用户只能有一份有效文件）",
+        "operationId": "upload_pdf_uploads_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_pdf_uploads_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health_report": {
       "post": {
         "summary": "Health Report",
-        "description": "处理健康问卷提交",
+        "description": "处理健康问卷提交（每个用户只能有一个进行中的任务）",
         "operationId": "health_report_health_report_post",
         "requestBody": {
           "content": {
@@ -45,19 +84,19 @@
         }
       }
     },
-    "/interpret_result/{task_id}": {
+    "/interpret_result/{uuid}": {
       "get": {
         "summary": "Get Interpret Result",
         "description": "获取体检报告解读结果",
-        "operationId": "get_interpret_result_interpret_result__task_id__get",
+        "operationId": "get_interpret_result_interpret_result__uuid__get",
         "parameters": [
           {
-            "name": "task_id",
+            "name": "uuid",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Task Id"
+              "title": "Uuid"
             }
           }
         ],
@@ -83,19 +122,19 @@
         }
       }
     },
-    "/recommend_result/{task_id}": {
+    "/recommend_result/{uuid}": {
       "get": {
         "summary": "Get Recommend Result",
         "description": "获取体检套餐推荐结果",
-        "operationId": "get_recommend_result_recommend_result__task_id__get",
+        "operationId": "get_recommend_result_recommend_result__uuid__get",
         "parameters": [
           {
-            "name": "task_id",
+            "name": "uuid",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Task Id"
+              "title": "Uuid"
             }
           }
         ],
@@ -121,19 +160,19 @@
         }
       }
     },
-    "/task_status/{task_id}": {
+    "/task_status/{uuid}": {
       "get": {
         "summary": "Get Task Status",
         "description": "获取任务状态",
-        "operationId": "get_task_status_task_status__task_id__get",
+        "operationId": "get_task_status_task_status__uuid__get",
         "parameters": [
           {
-            "name": "task_id",
+            "name": "uuid",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "title": "Task Id"
+              "title": "Uuid"
             }
           }
         ],
@@ -335,6 +374,24 @@
   },
   "components": {
     "schemas": {
+      "Body_upload_pdf_uploads_post": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "file"
+        ]
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -363,16 +420,6 @@
           },
           "user_id": {
             "title": "User Id",
-            "type": "string",
-            "nullable": true
-          },
-          "uuid": {
-            "title": "Uuid",
-            "type": "string",
-            "nullable": true
-          },
-          "pdf": {
-            "title": "Pdf",
             "type": "string",
             "nullable": true
           },
@@ -631,9 +678,9 @@
       },
       "TaskResponse": {
         "properties": {
-          "task_id": {
+          "uuid": {
             "type": "string",
-            "title": "Task Id"
+            "title": "Uuid"
           },
           "ai_results": {
             "type": "string",
@@ -646,16 +693,16 @@
         },
         "type": "object",
         "required": [
-          "task_id",
+          "uuid",
           "ai_results",
           "ai_status"
         ]
       },
       "TaskStatusResponse": {
         "properties": {
-          "task_id": {
+          "uuid": {
             "type": "string",
-            "title": "Task Id"
+            "title": "Uuid"
           },
           "ai_status": {
             "type": "string",
@@ -672,10 +719,32 @@
         },
         "type": "object",
         "required": [
-          "task_id",
+          "uuid",
           "ai_status",
           "ai_results",
           "created_at"
+        ]
+      },
+      "UploadResponse": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "file_path": {
+            "type": "string",
+            "title": "File Path"
+          },
+          "upload_time": {
+            "type": "string",
+            "title": "Upload Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "file_path",
+          "upload_time"
         ]
       },
       "ValidationError": {
