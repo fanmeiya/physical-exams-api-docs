@@ -152,44 +152,6 @@ GET /companies/{company_code}/packages/compare
 }
 ```
 
-### 10. 查询用户当前任务
-```bash
-GET /users/{user_id}/current_task
-
-# 响应:
-{
-  "uuid": "550e8400-e29b-41d4-a716-446655440000",
-  "ai_status": "DONE",
-  "ai_results": "# 体检报告解读结果...",
-  "created_at": "2025-01-01 12:00:00",
-  "action": "interpret"
-}
-
-# 如果无任务记录:
-{
-  "message": "用户暂无任务记录"
-}
-```
-
-### 11. 查询用户上传状态
-```bash
-GET /users/{user_id}/upload_status
-
-# 响应:
-{
-  "has_file": true,
-  "filename": "user001_1704067200.pdf",
-  "upload_time": "2025-01-01 12:00:00",
-  "file_size": 2048576
-}
-
-# 如果无文件:
-{
-  "has_file": false,
-  "message": "用户尚未上传PDF文件"
-}
-```
-
 ## 状态码说明
 
 | 状态 | 说明 |
@@ -233,10 +195,6 @@ curl -X POST http://localhost:8000/health_report \
 curl http://localhost:8000/interpret_result/abc-123
 
 # 响应: {"uuid": "abc-123", "ai_status": "DONE", "ai_results": "# 体检报告解读结果..."}
-
-# 5. 或者查询用户当前任务
-curl http://localhost:8000/users/user001/current_task
-```
 
 ### 个性化推荐流程
 ```bash
