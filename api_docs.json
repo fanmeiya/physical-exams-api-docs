@@ -1,5 +1,5 @@
 {
-  "openapi": "3.1.0",
+  "openapi": "3.0.0",
   "info": {
     "title": "体检智能分析系统",
     "description": "提供体检报告解读和套餐推荐服务的API",
@@ -345,8 +345,7 @@
             "title": "Detail"
           }
         },
-        "type": "object",
-        "title": "HTTPValidationError"
+        "type": "object"
       },
       "HealthReportRequest": {
         "properties": {
@@ -363,544 +362,247 @@
             "title": "Title"
           },
           "user_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "User Id"
+            "title": "User Id",
+            "type": "string",
+            "nullable": true
           },
           "uuid": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Uuid"
+            "title": "Uuid",
+            "type": "string",
+            "nullable": true
           },
           "pdf": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pdf"
+            "title": "Pdf",
+            "type": "string",
+            "nullable": true
           },
           "company_code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Company Code",
-            "default": "default_company"
+            "default": "default_company",
+            "type": "string",
+            "nullable": true
           },
           "gender": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gender"
+            "title": "Gender",
+            "type": "string",
+            "nullable": true
           },
           "age": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Age"
+            "title": "Age",
+            "type": "integer",
+            "nullable": true
           },
           "pulse": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Pulse"
+            "title": "Pulse",
+            "type": "integer",
+            "nullable": true
           },
           "waistline": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Waistline"
+            "title": "Waistline",
+            "type": "integer",
+            "nullable": true
           },
           "sbp": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sbp"
+            "title": "Sbp",
+            "type": "integer",
+            "nullable": true
           },
           "dbp": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Dbp"
+            "title": "Dbp",
+            "type": "integer",
+            "nullable": true
           },
           "symptoms": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Symptoms",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "medical_history": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Medical History",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "surgery_history": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Surgery History"
+            "title": "Surgery History",
+            "type": "string",
+            "nullable": true
           },
           "previous_exam_abnormal": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Previous Exam Abnormal",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "lung_nodule_level": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Lung Nodule Level"
+            "title": "Lung Nodule Level",
+            "type": "string",
+            "nullable": true
           },
           "hepatic_ct_done": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hepatic Ct Done"
+            "title": "Hepatic Ct Done",
+            "type": "string",
+            "nullable": true
           },
           "renal_ct_done": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Renal Ct Done"
+            "title": "Renal Ct Done",
+            "type": "string",
+            "nullable": true
           },
           "anemia_types": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Anemia Types",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "gastroscopy_done": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Gastroscopy Done",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "gastroscopy_year": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gastroscopy Year"
+            "title": "Gastroscopy Year",
+            "type": "integer",
+            "nullable": true
           },
           "gastroscopy_result": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Gastroscopy Result"
+            "title": "Gastroscopy Result",
+            "type": "string",
+            "nullable": true
           },
           "colonoscopy_done": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Colonoscopy Done",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "colonoscopy_year": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Colonoscopy Year"
+            "title": "Colonoscopy Year",
+            "type": "integer",
+            "nullable": true
           },
           "colonoscopy_result": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Colonoscopy Result"
+            "title": "Colonoscopy Result",
+            "type": "string",
+            "nullable": true
           },
           "hpv_screened": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Hpv Screened",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "hpv_years": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hpv Years"
+            "title": "Hpv Years",
+            "type": "integer",
+            "nullable": true
           },
           "smoking": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Smoking",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "smoking_years": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Smoking Years"
+            "title": "Smoking Years",
+            "type": "integer",
+            "nullable": true
           },
           "smoking_daily": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Smoking Daily"
+            "title": "Smoking Daily",
+            "type": "integer",
+            "nullable": true
           },
           "smoking_quit": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Smoking Quit",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "drinking": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Drinking",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "white_liquor_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "White Liquor Amount"
+            "title": "White Liquor Amount",
+            "type": "string",
+            "nullable": true
           },
           "beer_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Beer Amount"
+            "title": "Beer Amount",
+            "type": "string",
+            "nullable": true
           },
           "asbestos_exposure": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Asbestos Exposure",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "occupation_traits": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Occupation Traits",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "lifestyle": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Lifestyle",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "diet": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Diet",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "marriage_status": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Marriage Status",
-            "default": "否"
+            "default": "否",
+            "type": "string",
+            "nullable": true
           },
           "marriage_years": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Marriage Years"
+            "title": "Marriage Years",
+            "type": "integer",
+            "nullable": true
           },
           "family_history": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Family History",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "family_cancer_types": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
             "title": "Family Cancer Types",
-            "default": []
+            "default": [],
+            "type": "array",
+            "nullable": true
           },
           "antihypertensive_names": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Antihypertensive Names"
+            "title": "Antihypertensive Names",
+            "type": "string",
+            "nullable": true
           },
           "lipidlowering_names": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Lipidlowering Names"
+            "title": "Lipidlowering Names",
+            "type": "string",
+            "nullable": true
           },
           "hypoglycemic_names": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hypoglycemic Names"
+            "title": "Hypoglycemic Names",
+            "type": "string",
+            "nullable": true
           },
           "longterm_meds": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Longterm Meds"
+            "title": "Longterm Meds",
+            "type": "string",
+            "nullable": true
           }
         },
         "type": "object",
@@ -908,8 +610,7 @@
           "action",
           "name",
           "title"
-        ],
-        "title": "HealthReportRequest"
+        ]
       },
       "PackageResponse": {
         "properties": {
@@ -926,8 +627,7 @@
         "required": [
           "package_results",
           "package_status"
-        ],
-        "title": "PackageResponse"
+        ]
       },
       "TaskResponse": {
         "properties": {
@@ -949,8 +649,7 @@
           "task_id",
           "ai_results",
           "ai_status"
-        ],
-        "title": "TaskResponse"
+        ]
       },
       "TaskStatusResponse": {
         "properties": {
@@ -977,8 +676,7 @@
           "ai_status",
           "ai_results",
           "created_at"
-        ],
-        "title": "TaskStatusResponse"
+        ]
       },
       "ValidationError": {
         "properties": {
@@ -1010,8 +708,7 @@
           "loc",
           "msg",
           "type"
-        ],
-        "title": "ValidationError"
+        ]
       }
     }
   }
