@@ -4,12 +4,20 @@
 
 **版本**: 1.0.0
 
-## 查看API文档
+## 🌐 在线访问
 
-- [在线文档](./api_docs.html) - 完整的交互式API文档
-- [JSON规范](./api_docs.json) - OpenAPI 3.0 规范文件
+- **主页**: [https://fanmeiya.github.io/physical-exams-api-docs/](https://fanmeiya.github.io/physical-exams-api-docs/)
+- **API文档**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
+- **备用文档**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs_fallback.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs_fallback.html)
 
-## 快速开始
+## 📁 文件说明
+
+- `index.html` - 项目主页和快速导航
+- `api_docs.html` - 完整的交互式API文档
+- `api_docs_fallback.html` - 兼容性备用文档
+- `api_docs.json` - OpenAPI 3.0 规范文件
+
+## 🚀 快速开始
 
 ### 基础URL
 ```
@@ -57,7 +65,7 @@ GET /companies/{company_code}/dashboard           # 健康数据看板
 GET /companies/{company_code}/packages/compare    # 套餐对比分析
 ```
 
-## 状态码说明
+## 📊 状态码说明
 
 | 状态 | 说明 |
 |------|------|
@@ -67,6 +75,12 @@ GET /companies/{company_code}/packages/compare    # 套餐对比分析
 | DONE | 任务完成 |
 | ERROR | 任务出错 |
 
-## 联系方式
+## 🔧 技术栈
+
+- **后端框架**: FastAPI
+- **API文档**: OpenAPI 3.0 + Swagger UI
+- **部署**: GitHub Pages
+
+## 📧 联系方式
 
 如有问题，请联系开发团队。
