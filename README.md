@@ -6,7 +6,7 @@
 
 ## 在线访问
 
-- **API文档**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
+- **API文档（重要）**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
 - **OpenAPI规范**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json)
 
 ## 快速开始
@@ -36,7 +36,7 @@ Content-Type: multipart/form-data
 
 # 响应:
 {
-  "message": "文件 report.pdf 上传成功（已覆盖之前的文件）",
+  "message": "文件 report.pdf 上传成功",
   "file_path": "uploads/user001/user001_1704067200.pdf",
   "upload_time": "2025-01-01 12:00:00"
 }
@@ -65,17 +65,59 @@ Content-Type: application/json
   "title": "体检报告解读",
   "user_id": "user001",  # 体检报告解读时必需
   "company_code": "company_abc",  # 个性化推荐时必需
+  
+  # 基本健康数据
   "gender": "男",
   "age": 35,
   "pulse": 72,
   "waistline": 85,
-  "sbp": 125,
-  "dbp": 80,
+  "sbp": 125,  # 收缩压
+  "dbp": 80,   # 舒张压
+  
+  # 健康状况
   "symptoms": ["头痛", "失眠"],
   "medical_history": ["高血压"],
   "surgery_history": "阑尾切除术（2015年）",
   "previous_exam_abnormal": ["血压偏高", "血脂异常"],
-  # ... 其他健康问卷字段
+  
+  # 专项检查
+  "lung_nodule_level": "1级",
+  "hepatic_ct_done": "否",
+  "renal_ct_done": "否",
+  "anemia_types": ["缺铁性贫血"],
+  "gastroscopy_done": "是",
+  "gastroscopy_year": 2023,
+  "gastroscopy_result": "浅表性胃炎",
+  "colonoscopy_done": "否",
+  "colonoscopy_year": 0,
+  "colonoscopy_result": "",
+  "hpv_screened": "是",
+  "hpv_years": 2024,
+  
+  # 生活习惯
+  "smoking": "否",
+  "smoking_years": 0,
+  "smoking_daily": 0,
+  "smoking_quit": "否",
+  "drinking": "是",
+  "white_liquor_amount": 50,
+  "beer_amount": 500,
+  "asbestos_exposure": "否",
+  "occupation_traits": ["久坐", "高压"],
+  "lifestyle": ["熬夜", "运动少"],
+  "diet": ["高盐", "高油"],
+  
+  # 婚姻家庭
+  "marriage_status": "是",
+  "marriage_years": 10,
+  "family_history": ["高血压", "糖尿病"],
+  "family_cancer_types": ["肺癌"],
+  
+  # 用药情况
+  "antihypertensive_names": "氨氯地平",
+  "lipidlowering_names": "阿托伐他汀",
+  "hypoglycemic_names": "",
+  "longterm_meds": "维生素D"
 }
 
 # 响应:
@@ -152,6 +194,7 @@ GET /companies/{company_code}/packages/compare
 }
 ```
 
+
 ## 状态码说明
 
 | 状态 | 说明 |
@@ -167,17 +210,12 @@ GET /companies/{company_code}/packages/compare
 
 ### 体检报告解读流程
 ```bash
-# 1. 检查用户上传状态
-curl http://localhost:8000/users/user001/upload_status
-
-# 2. 上传PDF文件
+# 1. 上传PDF文件
 curl -X POST http://localhost:8000/uploads \
   -F "user_id=user001" \
   -F "file=@report.pdf"
 
-# 响应: {"message": "文件上传成功", "file_path": "...", "upload_time": "..."}
-
-# 3. 提交解读问卷
+# 2. 提交解读问卷（简化版）
 curl -X POST http://localhost:8000/health_report \
   -H "Content-Type: application/json" \
   -d '{
@@ -186,19 +224,18 @@ curl -X POST http://localhost:8000/health_report \
     "title": "体检报告解读",
     "user_id": "user001",
     "gender": "男",
-    "age": 35
+    "age": 35,
+    "sbp": 125,
+    "dbp": 80
   }'
 
-# 响应: {"uuid": "abc-123", "ai_status": "PENDING", "ai_results": "任务已提交..."}
-
-# 4. 查询解读结果
-curl http://localhost:8000/interpret_result/abc-123
-
-# 响应: {"uuid": "abc-123", "ai_status": "DONE", "ai_results": "# 体检报告解读结果..."}
+# 3. 查询解读结果
+curl http://localhost:8000/interpret_result/{uuid}
+```
 
 ### 个性化推荐流程
 ```bash
-# 1. 提交推荐问卷
+# 1. 提交推荐问卷（完整版）
 curl -X POST http://localhost:8000/health_report \
   -H "Content-Type: application/json" \
   -d '{
@@ -207,30 +244,24 @@ curl -X POST http://localhost:8000/health_report \
     "title": "个性化推荐",
     "company_code": "company_abc",
     "gender": "女",
-    "age": 28
+    "age": 28,
+    "smoking": "否",
+    "drinking": "否",
+    "family_history": ["糖尿病"],
+    "occupation_traits": ["久坐"]
   }'
 
-# 响应: {"uuid": "def-456", "ai_status": "PENDING", "ai_results": "任务已提交..."}
-
 # 2. 查询推荐状态
-curl http://localhost:8000/recommend_result/def-456
-
-# 响应: {"uuid": "def-456", "ai_status": "WAITING", "ai_results": "等待企业管理员生成套餐"}
+curl http://localhost:8000/recommend_result/{uuid}
 
 # 3. 企业端生成套餐
 curl -X POST http://localhost:8000/companies/company_abc/packages/generate
 
-# 响应: {"package_status": "PROCESSING", "package_results": "正在制定中..."}
-
 # 4. 查询套餐状态
 curl http://localhost:8000/companies/company_abc/packages/status
 
-# 响应: {"package_status": "DONE", "package_results": "# 企业体检套餐方案..."}
-
 # 5. 再次查询员工推荐结果（状态变为DONE）
-curl http://localhost:8000/recommend_result/def-456
-
-# 响应: {"uuid": "def-456", "ai_status": "DONE", "ai_results": "# 李四的体检套餐推荐..."}
+curl http://localhost:8000/recommend_result/{uuid}
 ```
 
 ## 用户覆盖机制
@@ -247,67 +278,56 @@ curl http://localhost:8000/recommend_result/def-456
 - 旧任务状态变为 `CANCELLED`
 - 确保不会出现重复处理
 
-## 健康问卷字段说明
+## 健康问卷字段详细说明
 
-### 基础信息
 - `action`: 操作类型 ("interpret" | "recommend")
-- `name`: 姓名
-- `title`: 报告标题
-- `user_id`: 用户ID (体检报告解读必需)
-- `company_code`: 企业代码 (个性化推荐必需)
-
-### 基本健康数据
+- `name`: 姓名 (string)
+- `title`: 报告标题 (string)
+- `user_id`: 用户ID (体检报告解读时必需)
+- `company_code`: 企业代码 (个性化推荐时必需，默认"default_company")
 - `gender`: 性别 ("男" | "女")
-- `age`: 年龄
-- `pulse`: 脉搏
-- `waistline`: 腹围
-- `sbp`: 收缩压/高压
-- `dbp`: 舒张压/低压
+- `age`: 年龄 (integer，默认0)
+- `pulse`: 脉搏 (integer，默认0)
+- `waistline`: 腹围 (integer，默认0)
+- `sbp`: 收缩压/高压 (integer，默认0)
+- `dbp`: 舒张压/低压 (integer，默认0)
+- `symptoms`: 症状列表 (array，如["头痛", "失眠"])
+- `medical_history`: 既往病史 (array，如["高血压", "糖尿病"])
+- `surgery_history`: 手术史具体名称 (string，如"阑尾切除术（2015年）")
+- `previous_exam_abnormal`: 既往体检异常指标 (array，如["血压偏高", "血脂异常"])
+- `lung_nodule_level`: 肺结节分级 (string，如"1级"、"2级")
+- `hepatic_ct_done`: 是否已行上腹部增强CT检查 ("是" | "否"，默认"否")
+- `renal_ct_done`: 是否已行肾错构瘤CT检查 ("是" | "否"，默认"否")
+- `anemia_types`: 贫血原因筛查 (array，如["缺铁性贫血"])
+- `gastroscopy_done`: 既往是否行胃镜检查 ("是" | "否"，默认"否")
+- `gastroscopy_year`: 上次胃镜检查年份 (integer，默认0)
+- `gastroscopy_result`: 胃镜检查结果 (string，如"浅表性胃炎")
+- `colonoscopy_done`: 既往是否行肠镜检查 ("是" | "否"，默认"否")
+- `colonoscopy_year`: 上次肠镜检查年份 (integer，默认0)
+- `colonoscopy_result`: 肠镜检查结果 (string)
+- `hpv_screened`: 既往是否行HPV筛查 ("是" | "否"，默认"否")
+- `hpv_years`: 既往HPV筛查时间年份 (integer，默认0)
+- `smoking`: 抽烟 ("是" | "否"，默认"否")
+- `smoking_years`: 抽烟年数 (integer，默认0)
+- `smoking_daily`: 每天抽烟支数 (integer，默认0)
+- `smoking_quit`: 是否已戒烟 ("是" | "否"，默认"否")
+- `drinking`: 经常饮酒 ("是" | "否"，默认"否")
+- `white_liquor_amount`: 白酒饮用量 (integer，单位ml，默认0)
+- `beer_amount`: 啤酒饮用量 (integer，单位ml，默认0)
+- `asbestos_exposure`: 长期接触石棉、粉尘或重金属 ("是" | "否"，默认"否")
+- `occupation_traits`: 职业特点列表 (array，如["久坐", "高压", "熬夜"])
+- `lifestyle`: 生活习惯列表 (array，如["熬夜", "运动少", "作息不规律"])
+- `diet`: 饮食习惯列表 (array，如["高盐", "高油", "高糖", "蔬菜少"])
+- `marriage_status`: 是否已婚 ("是" | "否"，默认"否")
+- `marriage_years`: 已婚年数 (integer，默认0)
+- `family_history`: 直系亲属病史列表 (array，如["高血压", "糖尿病", "心脏病"])
+- `family_cancer_types`: 直系亲属恶性肿瘤类型列表 (array，如["肺癌", "肝癌", "胃癌"])
+- `antihypertensive_names`: 降压药物名称 (string，如"氨氯地平、缬沙坦")
+- `lipidlowering_names`: 降脂药物名称 (string，如"阿托伐他汀")
+- `hypoglycemic_names`: 降糖药物名称 (string，如"二甲双胍")
+- `longterm_meds`: 长期服用的其他药物 (string，如"维生素D、钙片")
 
-### 健康状况
-- `symptoms`: 症状列表
-- `medical_history`: 既往病史
-- `surgery_history`: 手术史
-- `previous_exam_abnormal`: 既往体检异常指标
 
-### 专项检查
-- `lung_nodule_level`: 肺结节分级
-- `hepatic_ct_done`: 是否已行上腹部增强CT检查
-- `renal_ct_done`: 是否已行肾错构瘤CT检查
-- `anemia_types`: 贫血原因筛查
-- `gastroscopy_done`: 既往是否行胃镜检查 ("是" | "否")
-- `gastroscopy_year`: 上次胃镜检查年份
-- `gastroscopy_result`: 胃镜检查结果
-- `colonoscopy_done`: 既往是否行肠镜检查 ("是" | "否")
-- `colonoscopy_year`: 上次肠镜检查年份
-- `colonoscopy_result`: 肠镜检查结果
-- `hpv_screened`: 既往是否行HPV筛查 ("是" | "否")
-- `hpv_years`: 既往HPV筛查时间年份
-
-### 生活习惯
-- `smoking`: 抽烟 ("是" | "否")
-- `smoking_years`: 抽烟年数
-- `smoking_daily`: 每天抽烟支数
-- `smoking_quit`: 是否已戒烟 ("是" | "否")
-- `drinking`: 经常饮酒 ("是" | "否")
-- `white_liquor_amount`: 白酒饮用量
-- `beer_amount`: 啤酒饮用量
-- `asbestos_exposure`: 长期接触石棉、粉尘或重金属 ("是" | "否")
-- `occupation_traits`: 职业特点列表
-- `lifestyle`: 生活习惯列表
-- `diet`: 饮食习惯列表
-
-### 婚姻家庭
-- `marriage_status`: 是否已婚 ("是" | "否")
-- `marriage_years`: 已婚年数
-- `family_history`: 直系亲属病史列表
-- `family_cancer_types`: 直系亲属恶性肿瘤类型列表
-
-### 用药情况
-- `antihypertensive_names`: 降压药物名称
-- `lipidlowering_names`: 降脂药物名称
-- `hypoglycemic_names`: 降糖药物名称
-- `longterm_meds`: 长期服用的其他药物
 
 ### 企业管理
 - `POST /companies/{company_code}/packages/generate` - 生成企业套餐
@@ -323,7 +343,6 @@ curl http://localhost:8000/recommend_result/def-456
 - **异步处理**: BackgroundTasks 后台任务处理
 - **数据存储**: 文件系统 + 内存缓存
 - **AI模型**: 集成深度学习模型进行智能分析
-
 ---
 
 *最后更新时间: 2025-08-11*

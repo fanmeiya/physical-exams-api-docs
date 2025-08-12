@@ -430,26 +430,31 @@
           },
           "age": {
             "title": "Age",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
           "pulse": {
             "title": "Pulse",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
           "waistline": {
             "title": "Waistline",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
           "sbp": {
             "title": "Sbp",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
           "dbp": {
             "title": "Dbp",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
@@ -483,11 +488,13 @@
           },
           "hepatic_ct_done": {
             "title": "Hepatic Ct Done",
+            "default": "否",
             "type": "string",
             "nullable": true
           },
           "renal_ct_done": {
             "title": "Renal Ct Done",
+            "default": "否",
             "type": "string",
             "nullable": true
           },
@@ -505,6 +512,7 @@
           },
           "gastroscopy_year": {
             "title": "Gastroscopy Year",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
@@ -521,6 +529,7 @@
           },
           "colonoscopy_year": {
             "title": "Colonoscopy Year",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
@@ -537,6 +546,7 @@
           },
           "hpv_years": {
             "title": "Hpv Years",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
@@ -548,11 +558,13 @@
           },
           "smoking_years": {
             "title": "Smoking Years",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
           "smoking_daily": {
             "title": "Smoking Daily",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
@@ -570,12 +582,14 @@
           },
           "white_liquor_amount": {
             "title": "White Liquor Amount",
-            "type": "string",
+            "default": 0,
+            "type": "integer",
             "nullable": true
           },
           "beer_amount": {
             "title": "Beer Amount",
-            "type": "string",
+            "default": 0,
+            "type": "integer",
             "nullable": true
           },
           "asbestos_exposure": {
@@ -610,6 +624,7 @@
           },
           "marriage_years": {
             "title": "Marriage Years",
+            "default": 0,
             "type": "integer",
             "nullable": true
           },
