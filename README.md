@@ -13,7 +13,7 @@
 
 ### 基础URL
 ```
-http://localhost:8000
+https://ai4health-svc-x-ai4health-x-vckg0tnisvp5.sproxy.hd-01.alayanew.com:22443/
 ```
 
 ### 工作流程
