@@ -245,7 +245,7 @@ curl -X POST http://localhost:8000/health_report \
     "company_code": "company_abc",
     "gender": "女",
     "age": 28,
-    "personal_history": ['经常喝酒'],
+    "personal_history": ["经常喝酒"],
     "family_history": ["糖尿病"],
     "occupation_traits": ["久坐"]
   }'
@@ -307,7 +307,6 @@ curl http://localhost:8000/recommend_result/{uuid}
 - `hpv_screened`: 既往是否行HPV筛查 ("是" | "否"，默认"否")
 - `hpv_years`: 既往HPV筛查时间年份 (integer，默认0)
 - `personal_history`: 个人史 (array，如["经常喝酒"])
-- `smoking`: 抽烟 ("是" | "否"，默认"否")
 - `smoking_years`: 抽烟年数 (integer，默认0)
 - `smoking_daily`: 每天抽烟支数 (integer，默认0)
 - `smoking_quit`: 是否已戒烟 ("是" | "否"，默认"否")
