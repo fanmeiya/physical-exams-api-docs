@@ -550,10 +550,10 @@
             "type": "integer",
             "nullable": true
           },
-          "smoking": {
-            "title": "Smoking",
-            "default": "否",
-            "type": "string",
+          "personal_history": {
+            "title": "Personal History",
+            "default": [],
+            "type": "array",
             "nullable": true
           },
           "smoking_years": {
@@ -574,12 +574,6 @@
             "type": "string",
             "nullable": true
           },
-          "drinking": {
-            "title": "Drinking",
-            "default": "否",
-            "type": "string",
-            "nullable": true
-          },
           "white_liquor_amount": {
             "title": "White Liquor Amount",
             "default": 0,
@@ -590,12 +584,6 @@
             "title": "Beer Amount",
             "default": 0,
             "type": "integer",
-            "nullable": true
-          },
-          "asbestos_exposure": {
-            "title": "Asbestos Exposure",
-            "default": "否",
-            "type": "string",
             "nullable": true
           },
           "occupation_traits": {

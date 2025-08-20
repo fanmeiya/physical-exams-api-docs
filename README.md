@@ -13,7 +13,7 @@
 
 ### 基础URL
 ```
-https://ai4health-svc-x-ai4health-x-vckg0tnisvp5.sproxy.hd-01.alayanew.com:22443/
+http://localhost:8000
 ```
 
 ### 工作流程
@@ -94,15 +94,15 @@ Content-Type: application/json
   "hpv_screened": "是",
   "hpv_years": 2024,
   
+  # 个人史
+  "personal_history": ['经常喝酒'],
+
   # 生活习惯
-  "smoking": "否",
   "smoking_years": 0,
   "smoking_daily": 0,
   "smoking_quit": "否",
-  "drinking": "是",
   "white_liquor_amount": 50,
   "beer_amount": 500,
-  "asbestos_exposure": "否",
   "occupation_traits": ["久坐", "高压"],
   "lifestyle": ["熬夜", "运动少"],
   "diet": ["高盐", "高油"],
@@ -245,8 +245,7 @@ curl -X POST http://localhost:8000/health_report \
     "company_code": "company_abc",
     "gender": "女",
     "age": 28,
-    "smoking": "否",
-    "drinking": "否",
+    "personal_history": ['经常喝酒'],
     "family_history": ["糖尿病"],
     "occupation_traits": ["久坐"]
   }'
@@ -307,14 +306,13 @@ curl http://localhost:8000/recommend_result/{uuid}
 - `colonoscopy_result`: 肠镜检查结果 (string)
 - `hpv_screened`: 既往是否行HPV筛查 ("是" | "否"，默认"否")
 - `hpv_years`: 既往HPV筛查时间年份 (integer，默认0)
+- `personal_history`: 个人史 (array，如["经常喝酒"])
 - `smoking`: 抽烟 ("是" | "否"，默认"否")
 - `smoking_years`: 抽烟年数 (integer，默认0)
 - `smoking_daily`: 每天抽烟支数 (integer，默认0)
 - `smoking_quit`: 是否已戒烟 ("是" | "否"，默认"否")
-- `drinking`: 经常饮酒 ("是" | "否"，默认"否")
 - `white_liquor_amount`: 白酒饮用量 (integer，单位ml，默认0)
 - `beer_amount`: 啤酒饮用量 (integer，单位ml，默认0)
-- `asbestos_exposure`: 长期接触石棉、粉尘或重金属 ("是" | "否"，默认"否")
 - `occupation_traits`: 职业特点列表 (array，如["久坐", "高压", "熬夜"])
 - `lifestyle`: 生活习惯列表 (array，如["熬夜", "运动少", "作息不规律"])
 - `diet`: 饮食习惯列表 (array，如["高盐", "高油", "高糖", "蔬菜少"])
