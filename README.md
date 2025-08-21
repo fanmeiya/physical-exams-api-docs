@@ -60,7 +60,7 @@ Content-Type: application/json
   # 体检报告解读专用 (action="interpret"时必填)
   "file_path": "/path/to/uploaded/report.pdf",  # PDF文件路径，前端上传后传入
   
-  # 健康问卷数据 (推荐时需要，解读时可选)
+  # 健康问卷数据
   "gender": "男",
   "age": 35,
   "pulse": 72,
