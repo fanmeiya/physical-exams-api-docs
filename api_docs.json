@@ -6,49 +6,10 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/uploads": {
-      "post": {
-        "summary": "Upload Pdf",
-        "description": "上传体检PDF文件（每个用户只能有一份有效文件）",
-        "operationId": "upload_pdf_uploads_post",
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "$ref": "#/components/schemas/Body_upload_pdf_uploads_post"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/UploadResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/health_report": {
       "post": {
         "summary": "Health Report",
-        "description": "处理健康问卷提交（每个用户只能有一个进行中的任务）",
+        "description": "处理健康问卷提交",
         "operationId": "health_report_health_report_post",
         "requestBody": {
           "content": {
@@ -344,26 +305,12 @@
   },
   "components": {
     "schemas": {
-      "Body_upload_pdf_uploads_post": {
-        "properties": {
-          "user_id": {
-            "type": "string",
-            "title": "User Id"
-          },
-          "file": {
-            "type": "string",
-            "format": "binary",
-            "title": "File"
-          }
-        },
-        "type": "object",
-        "required": [
-          "user_id",
-          "file"
-        ]
-      },
       "CompareResponse": {
         "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
           "compare_analyse": {
             "type": "string",
             "title": "Compare Analyse"
@@ -371,11 +318,16 @@
         },
         "type": "object",
         "required": [
+          "code",
           "compare_analyse"
         ]
       },
       "DashboardResponse": {
         "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
           "health_data": {
             "type": "string",
             "title": "Health Data"
@@ -383,6 +335,7 @@
         },
         "type": "object",
         "required": [
+          "code",
           "health_data"
         ]
       },
@@ -404,13 +357,21 @@
             "type": "string",
             "title": "Action"
           },
-          "name": {
+          "uuid": {
             "type": "string",
-            "title": "Name"
+            "title": "Uuid"
+          },
+          "name": {
+            "title": "Name",
+            "default": "未知姓名",
+            "type": "string",
+            "nullable": true
           },
           "title": {
+            "title": "Title",
+            "default": "未知标题",
             "type": "string",
-            "title": "Title"
+            "nullable": true
           },
           "user_id": {
             "title": "User Id",
@@ -418,8 +379,11 @@
             "nullable": true
           },
           "company_code": {
-            "title": "Company Code",
-            "default": "default_company",
+            "type": "string",
+            "title": "Company Code"
+          },
+          "file_path": {
+            "title": "File Path",
             "type": "string",
             "nullable": true
           },
@@ -652,12 +616,16 @@
         "type": "object",
         "required": [
           "action",
-          "name",
-          "title"
+          "uuid",
+          "company_code"
         ]
       },
       "PackageResponse": {
         "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
           "package_results": {
             "type": "string",
             "title": "Package Results"
@@ -669,15 +637,16 @@
         },
         "type": "object",
         "required": [
+          "code",
           "package_results",
           "package_status"
         ]
       },
       "TaskResponse": {
         "properties": {
-          "uuid": {
-            "type": "string",
-            "title": "Uuid"
+          "code": {
+            "type": "integer",
+            "title": "Code"
           },
           "ai_results": {
             "type": "string",
@@ -690,31 +659,9 @@
         },
         "type": "object",
         "required": [
-          "uuid",
+          "code",
           "ai_results",
           "ai_status"
-        ]
-      },
-      "UploadResponse": {
-        "properties": {
-          "message": {
-            "type": "string",
-            "title": "Message"
-          },
-          "file_path": {
-            "type": "string",
-            "title": "File Path"
-          },
-          "upload_time": {
-            "type": "string",
-            "title": "Upload Time"
-          }
-        },
-        "type": "object",
-        "required": [
-          "message",
-          "file_path",
-          "upload_time"
         ]
       },
       "ValidationError": {
