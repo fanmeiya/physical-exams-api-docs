@@ -9,283 +9,139 @@
 - **API文档（重要）**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
 - **OpenAPI规范**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json)
 
-## 快速开始
+## 核心变更（V2.0）
 
-### 基础URL
-```
-http://localhost:8000
-```
+1.  **新增企业上传官方套餐流程**：允许企业管理员上传包含多个套餐的Excel文件。
+2.  **个人推荐流程分离**：员工提交问卷后，系统会根据企业是否上传了官方套餐，自动进入两条互斥的推荐流程之一：
+    *   **流程A (匹配官方套餐)**: 如果企业已上传套餐，系统会为员工匹配最合适的官方套餐。
+    *   **流程B (分配AI生成套餐)**: 如果企业未上传套餐，则沿用旧逻辑，等待管理员触发AI生成套餐并为员工分配。
+3.  **新增专用接口**：为此增加了 `packages/upload`, `packages/upload/status`, 和 `match_result` 三个新接口。
 
-### 工作流程
+## 工作流程详解
 
-1. **前端生成UUID** (任务唯一标识)
-2. **上传PDF文件** (前端自行处理，体检报告解读需要)
-3. **提交健康问卷** (传入UUID和file_path)
-4. **查询任务结果** (使用UUID)
-5. **企业端生成套餐** (个性化推荐完成后)
+### 流程A：匹配官方套餐（企业已上传套餐）
+
+1.  **企业管理员**：调用 `POST /companies/{company_code}/packages/upload` 提交套餐Excel文件，并用 `GET /companies/{company_code}/packages/upload/status/{task_id}` 查询处理状态，直至成功。
+2.  **员工**：提交健康问卷 `POST /health_report`。
+3.  **前端**：轮询 **`GET /match_result/{uuid}`** 接口。
+4.  **后端**：
+    *   `match_status` 变为 `PROCESSING`。
+    *   匹配完成后，`match_status` 变为 `DONE`，并返回AI生成的匹配报告和该套餐的原始Excel内容。
+
+### 流程B：分配AI生成套餐（企业未上传套餐）
+
+1.  **员工**：提交健康问卷 `POST /health_report`。
+2.  **前端**：此时轮询 `GET /match_result/{uuid}` 会得到 `match_status: "NOT_STARTED"`。
+3.  **企业管理员**：在企业端点击“生成套餐”，触发 `POST /companies/{company_code}/packages/generate`。
+4.  **后端**：为全公司员工分配AI生成的套餐。
+5.  **前端**：此时轮询 **`GET /recommend_result/{uuid}`** 接口，会发现 `assignment_status` 变为 `DONE`，并得到分配结果。
+
+**前端开发建议**：员工提交问卷后，可同时轮询 `GET /match_result/{uuid}` 和 `GET /recommend_result/{uuid}`。
 
 ## 主要接口
 
-### 1. 健康检查
-```bash
-GET /health
+### 1. 提交健康问卷
+- **接口**: `POST /health_report`
+- **说明**: 保持不变。提交问卷，启动后台分析任务。
 
-# 响应:
-{
-    "code": 0,
-    "message": "服务正常",
-    "data": {
-        "status": "healthy",
-        "service": "体检智能分析系统",
-        "timestamp": "2025-08-21 14:30:00"
-    }
-}
-```
+### 2. 获取体检报告解读结果
+- **接口**: `GET /interpret_result/{uuid}`
+- **说明**: 保持不变。获取由AI生成的体检报告文字解读。
 
-### 2. 提交健康问卷
+### 3. 获取个性化项目推荐
+- **接口**: `GET /personal_recommendation_result/{uuid}`
+- **说明**: 保持不变。获取基于问卷生成的、与套餐无关的个人“应检项目”清单。
+
+---
+### 4. 【新增】上传企业官方套餐
 ```bash
-POST /health_report
+POST /companies/{company_code}/packages/upload
 Content-Type: application/json
 
 {
-  "action": "interpret",           # 必填: "interpret"(体检报告解读) 或 "recommend"(个性化推荐)
-  "uuid": "用户生成的UUID",        # 必填: 前端生成的任务唯一标识
-  "company_code": "company_abc",   # 必填: 企业代码
-  
-  # 基本信息 (可选)
-  "name": "张三",
-  "title": "体检报告解读",
-  "user_id": "user001",
-  
-  # 体检报告解读专用 (action="interpret"时必填)
-  "file_path": "/path/to/uploaded/report.pdf",  # PDF文件路径，前端上传后传入
-  
-  # 健康问卷数据
-  "gender": "男",
-  "age": 35,
-  "pulse": 72,
-  "waistline": 85,
-  "sbp": 125,                      # 收缩压
-  "dbp": 80,                       # 舒张压
-  
-  # 健康状况
-  "symptoms": ["头痛", "失眠"],
-  "medical_history": ["高血压"],
-  "surgery_history": "阑尾切除术（2015年）",
-  "previous_exam_abnormal": ["血压偏高", "血脂异常"],
-  
-  # 专项检查
-  "lung_nodule_level": "1级",
-  "hepatic_ct_done": "否",
-  "renal_ct_done": "否",
-  "anemia_types": ["缺铁性贫血"],
-  "gastroscopy_done": "是",
-  "gastroscopy_year": 2023,
-  "gastroscopy_result": "浅表性胃炎",
-  "colonoscopy_done": "否",
-  "colonoscopy_year": 0,
-  "colonoscopy_result": "",
-  "hpv_screened": "是",
-  "hpv_years": 2024,
-  
-  # 个人史和生活习惯
-  "personal_history": ["经常喝酒"],
-  "smoking_years": 0,
-  "smoking_daily": 0,
-  "smoking_quit": "否",
-  "white_liquor_amount": 50,
-  "beer_amount": 500,
-  "occupation_traits": ["久坐", "高压"],
-  "lifestyle": ["熬夜", "运动少"],
-  "diet": ["高盐", "高油"],
-  
-  # 婚姻家庭
-  "marriage_status": "是",
-  "marriage_years": 10,
-  "family_history": ["高血压", "糖尿病"],
-  "family_cancer_types": ["肺癌"],
-  
-  # 用药情况
-  "antihypertensive_names": "氨氯地平",
-  "lipidlowering_names": "阿托伐他汀",
-  "hypoglycemic_names": "",
-  "longterm_meds": "维生素D"
+  "excel_path": "/path/on/server/company_a_packages.xlsx",
+  "task_id": "frontend-generated-uuid-for-this-upload"
 }
 
-# 成功响应:
+# 成功响应 (202 Accepted):
 {
-  "code": 0,
-  "ai_results": "健康问卷已成功提交，智能体正在解读体检报告",
-  "ai_status": "PENDING"
-}
-
-# 错误响应:
-{
-  "code": 400,
-  "ai_results": "体检报告解读需要提供file_path",
-  "ai_status": "ERROR"
+  "message": "文件上传成功，正在后台进行解析和标准化"
 }
 ```
 
-### 3. 获取体检报告解读结果
+### 5. 【新增】查询企业套餐上传状态
 ```bash
-GET /interpret_result/{uuid}
+GET /companies/{company_code}/packages/upload/status/{task_id}
 
 # 处理中响应:
 {
   "code": 0,
-  "ai_results": "正在解读体检报告...",
-  "ai_status": "PROCESSING"
+  "upload_status": "PROCESSING",
+  "upload_result": "正在进行标准化匹配..."
 }
 
 # 完成响应:
 {
   "code": 0,
-  "ai_results": "# 体检报告解读结果\n\n## 主要发现\n\n基于您的体检报告和问卷信息，发现以下问题：\n\n### 1. 血压偏高\n- 收缩压125mmHg，略高于正常范围\n- 建议：低盐饮食，规律运动\n\n### 2. 血脂异常\n- 总胆固醇偏高\n- 建议：控制饮食，定期复查\n\n## 健康建议\n\n1. **饮食调整**：减少高盐、高油食物摄入\n2. **生活方式**：增加运动，改善睡眠\n3. **定期监测**：建议3个月后复查血压血脂\n\n*注：本解读仅供参考，具体诊疗请咨询专业医生*",
-  "ai_status": "DONE"
-}
-
-# 错误响应:
-{
-  "code": 404,
-  "ai_results": "任务不存在",
-  "ai_status": "ERROR"
+  "upload_status": "DONE",
+  "upload_result": "套餐上传及处理完成"
 }
 ```
 
-### 4. 获取个性化推荐结果
+### 6. 【新增】获取官方套餐匹配结果
+```bash
+GET /match_result/{uuid}
+
+# 处理中响应:
+{
+  "code": 0,
+  "match_result": "贵公司已上传官方套餐，正在为您匹配最合适的套餐...",
+  "match_status": "PROCESSING",
+  "package_name": null,
+  "package_content": null
+}
+
+# 完成响应:
+{
+  "code": 0,
+  "match_status": "DONE",
+  "match_result": "# 套餐匹配报告\n\n## 推荐套餐：精英A套餐...",
+  "package_name": "精英A套餐",
+  "package_content": [
+    { "项目分类": "基础检查", "项目名称": "身高体重", "说明": "必检" },
+    { "项目分类": "实验室检查", "项目名称": "血常规", "说明": "必检" }
+  ]
+}
+```
+
+### 7. 【用途变更】获取AI生成套餐的分配结果
+- **接口**: `GET /recommend_result/{uuid}`
+- **说明**: 此接口现在**仅用于**获取由管理员触发AI生成套餐后的分配结果。
 ```bash
 GET /recommend_result/{uuid}
 
-# 等待响应:
+# 等待管理员操作:
 {
   "code": 0,
-  "ai_results": "个性化推荐已完成，等待企业管理员生成体检套餐。",
-  "ai_status": "WAITING"
+  "personal_package": "需等待企业管理员上传或生成套餐。",
+  "assignment_status": "NOT_STARTED"
 }
 
-# 完成响应 (套餐生成后):
+# 分配完成响应:
 {
   "code": 0,
-  "ai_results": "# 张三的体检套餐推荐\n\n## 推荐套餐：心脑血管专项套餐\n\n**匹配度：** 85%\n\n**套餐已包含项目：**\n- 心电图\n- 血压监测\n- 血脂全套\n- 颈动脉彩超\n\n**建议补充项目：**\n- 动态血压监测\n- 冠脉CTA\n\n**补充项目预估费用：** ¥350.00\n\n**说明：** 此套餐方案基于您的个人健康状况和公司整体情况制定，如有疑问请咨询HR或医务人员。",
-  "ai_status": "DONE"
+  "personal_package": "# AI套餐分配结果\n\n## 分配套餐：心脑血管专项...",
+  "assignment_status": "DONE"
 }
 ```
 
-### 5. 企业端生成套餐
-```bash
-POST /companies/{company_code}/packages/generate
+### 8. 企业端生成AI套餐
+- **接口**: `POST /companies/{company_code}/packages/generate`
+- **说明**: 保持不变。
 
-# 成功响应:
-{
-  "code": 0,
-  "package_results": "套餐生成任务已启动，正在制定中…",
-  "package_status": "PROCESSING"
-}
-
-# 错误响应:
-{
-  "code": 404,
-  "package_results": "未找到企业 company_abc 的数据",
-  "package_status": "ERROR"
-}
-```
-
-### 6. 查询企业套餐状态
-```bash
-GET /companies/{company_code}/packages/status
-
-# 完成响应:
-{
-  "code": 0,
-  "package_status": "DONE",
-  "package_results": "# 企业体检套餐方案\n\n**员工总数：** 50人\n\n## 男性套餐\n\n### 基础套餐\n- **适用人群：** 20人\n- **预估费用：** ¥800.00\n- **包含项目：** 血常规, 尿常规, 心电图, 胸部X光\n\n### 心脑血管套餐\n- **适用人群：** 15人\n- **预估费用：** ¥1200.00\n- **包含项目：** 血常规, 血脂全套, 心电图, 颈动脉彩超\n\n## 女性套餐\n\n### 基础套餐\n- **适用人群：** 10人\n- **预估费用：** ¥850.00\n- **包含项目：** 血常规, 尿常规, 妇科检查, 乳腺彩超\n\n### 妇科专项套餐\n- **适用人群：** 5人\n- **预估费用：** ¥1300.00\n- **包含项目：** 血常规, 妇科检查, 乳腺彩超, HPV检测\n\n## 套餐汇总\n\n- **男性套餐数量：** 2个\n- **女性套餐数量：** 2个\n- **总套餐数量：** 4个"
-}
-
-# 等待状态:
-{
-  "code": 0,
-  "package_status": "PENDING",
-  "package_results": "有员工推荐数据，可以开始生成套餐"
-}
-```
-
-### 7. 企业健康数据看板
-```bash
-GET /companies/{company_code}/dashboard
-
-# 响应:
-{
-  "code": 0,
-  "health_data": "# 企业员工健康分析报告（2025年度）\n\n## 数据概览\n- 在职员工总数：待统计\n- 已提交问卷人数：待统计\n- 心脑血管高风险人数：待分析\n..."
-}
-```
-
-### 8. 企业套餐对比分析
-```bash
-GET /companies/{company_code}/packages/compare
-
-# 响应:
-{
-  "code": 0,
-  "compare_analyse": "# 体检套餐对比分析报告\n\n## 2025年与2024年对比概览\n- 整体套餐费用：待分析\n- 套餐数量变化：待统计\n..."
-}
-```
-
-## 响应码说明
-
-| 响应码 | 说明 | 
-|--------|------|
-| `0` | 成功 |
-| `400` | 请求参数错误 |
-| `404` | 资源不存在 |
-| `500` | 服务器内部错误 |
-
-## 任务状态说明
-
-| 状态 | 说明 |
-|------|------|
-| `PENDING` | 任务已提交，等待处理 |
-| `PROCESSING` | 正在处理中 |
-| `WAITING` | 等待进一步操作（如等待企业管理员生成套餐） |
-| `DONE` | 任务完成 |
-| `ERROR` | 任务出错 |
-| `CANCELLED` | 任务被取消（用户提交了新任务） |
-
-## 工作流程详解
-
-### 体检报告解读流程
-1. **前端**：生成UUID，用户上传PDF文件
-2. **前端**：调用 `POST /health_report` 传入 `action="interpret"`, `uuid`, `file_path` 和问卷数据
-3. **后端**：返回 `ai_status="PENDING"`，开始后台解读
-4. **前端**：轮询 `GET /interpret_result/{uuid}` 查询结果
-5. **后端**：解读完成后返回 `ai_status="DONE"` 和解读结果
-
-### 个性化推荐流程
-1. **前端**：生成UUID，用户填写健康问卷
-2. **前端**：调用 `POST /health_report` 传入 `action="recommend"`, `uuid`, `company_code` 和问卷数据
-3. **后端**：返回 `ai_status="PENDING"`，开始生成个人推荐
-4. **前端**：轮询 `GET /recommend_result/{uuid}` 查询结果
-5. **后端**：个人推荐完成后返回 `ai_status="WAITING"`，等待企业生成套餐
-6. **企业管理员**：调用 `POST /companies/{company_code}/packages/generate` 生成套餐
-7. **后端**：套餐生成完成后，所有员工的状态变为 `ai_status="DONE"`
-
-## 技术栈
-
-- **后端框架**: FastAPI
-- **API文档**: OpenAPI 3.0 + Swagger UI  
-- **异步处理**: BackgroundTasks 后台任务处理
-- **数据存储**: 文件系统 + 内存缓存
-- **AI模型**: 集成深度学习模型进行智能分析
-- **模型管理**: 全局模型加载，避免重复初始化
-
-## 注意事项
-
-1. **UUID管理**：前端需要自行生成和管理UUID，建议使用标准的UUID4格式
-2. **文件路径**：file_path需要是服务器可访问的绝对路径
-4. **响应格式**：所有接口都返回统一的响应格式，通过code字段判断成功/失败
-5. **轮询建议**：前端轮询间隔建议2-5秒，避免过频请求
+### 9. 查询企业AI套餐生成状态
+- **接口**: `GET /companies/{company_code}/packages/status`
+- **说明**: 保持不变。
 
 ---
-
-*最后更新时间: 2025-08-21*
+*最后更新时间: 2025-11-28 15:31:36*

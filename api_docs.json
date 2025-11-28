@@ -22,13 +22,11 @@
           "required": true
         },
         "responses": {
-          "200": {
+          "202": {
             "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/TaskResponse"
-                }
+                "schema": {}
               }
             }
           },
@@ -85,11 +83,11 @@
         }
       }
     },
-    "/recommend_result/{uuid}": {
+    "/personal_recommendation_result/{uuid}": {
       "get": {
-        "summary": "Get Recommend Result",
-        "description": "获取体检套餐推荐结果",
-        "operationId": "get_recommend_result_recommend_result__uuid__get",
+        "summary": "Get Personal Recommendation",
+        "description": "获取个性化推荐结果",
+        "operationId": "get_personal_recommendation_personal_recommendation_result__uuid__get",
         "parameters": [
           {
             "name": "uuid",
@@ -107,7 +105,87 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/TaskResponse"
+                  "$ref": "#/components/schemas/PersonalRecommendResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recommend_result/{uuid}": {
+      "get": {
+        "summary": "Get Personal Package",
+        "description": "获取个人套餐推荐结果",
+        "operationId": "get_personal_package_recommend_result__uuid__get",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonalPackageResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/match_result/{uuid}": {
+      "get": {
+        "summary": "Get Personal Match Result",
+        "description": "获取匹配企业上传套餐的推荐结果",
+        "operationId": "get_personal_match_result_match_result__uuid__get",
+        "parameters": [
+          {
+            "name": "uuid",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PersonalMatchResponse"
                 }
               }
             }
@@ -285,6 +363,103 @@
         }
       }
     },
+    "/companies/{company_code}/packages/upload": {
+      "post": {
+        "summary": "Upload Company Package",
+        "description": "上传企业体检套餐Excel，并自动进行解析和标准化",
+        "operationId": "upload_company_package_companies__company_code__packages_upload_post",
+        "parameters": [
+          {
+            "name": "company_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Company Code"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CompanyPackageUploadRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/companies/{company_code}/packages/upload/status/{task_id}": {
+      "get": {
+        "summary": "Get Company Package Upload Status",
+        "description": "查询企业套餐上传和处理任务的状态。",
+        "operationId": "get_company_package_upload_status_companies__company_code__packages_upload_status__task_id__get",
+        "parameters": [
+          {
+            "name": "company_code",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Company Code"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Task Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CompanyPackageUploadStatusResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/health": {
       "get": {
         "summary": "Health Check",
@@ -305,6 +480,45 @@
   },
   "components": {
     "schemas": {
+      "CompanyPackageUploadRequest": {
+        "properties": {
+          "excel_path": {
+            "type": "string",
+            "title": "Excel Path"
+          },
+          "task_id": {
+            "type": "string",
+            "title": "Task Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "excel_path",
+          "task_id"
+        ]
+      },
+      "CompanyPackageUploadStatusResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
+          "upload_status": {
+            "type": "string",
+            "title": "Upload Status"
+          },
+          "upload_result": {
+            "type": "string",
+            "title": "Upload Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "upload_status",
+          "upload_result"
+        ]
+      },
       "CompareResponse": {
         "properties": {
           "code": {
@@ -425,12 +639,18 @@
           "symptoms": {
             "title": "Symptoms",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
           "medical_history": {
             "title": "Medical History",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -442,6 +662,9 @@
           "previous_exam_abnormal": {
             "title": "Previous Exam Abnormal",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -465,6 +688,9 @@
           "anemia_types": {
             "title": "Anemia Types",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -517,6 +743,9 @@
           "personal_history": {
             "title": "Personal History",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -553,18 +782,27 @@
           "occupation_traits": {
             "title": "Occupation Traits",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
           "lifestyle": {
             "title": "Lifestyle",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
           "diet": {
             "title": "Diet",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -583,12 +821,18 @@
           "family_history": {
             "title": "Family History",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
           "family_cancer_types": {
             "title": "Family Cancer Types",
             "default": [],
+            "items": {
+              "type": "string"
+            },
             "type": "array",
             "nullable": true
           },
@@ -640,6 +884,86 @@
           "code",
           "package_results",
           "package_status"
+        ]
+      },
+      "PersonalMatchResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
+          "match_result": {
+            "type": "string",
+            "title": "Match Result"
+          },
+          "match_status": {
+            "type": "string",
+            "title": "Match Status"
+          },
+          "package_name": {
+            "title": "Package Name",
+            "type": "string",
+            "nullable": true
+          },
+          "package_content": {
+            "title": "Package Content",
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "nullable": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "match_result",
+          "match_status"
+        ]
+      },
+      "PersonalPackageResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
+          "personal_package": {
+            "type": "string",
+            "title": "Personal Package"
+          },
+          "assignment_status": {
+            "type": "string",
+            "title": "Assignment Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "personal_package",
+          "assignment_status"
+        ]
+      },
+      "PersonalRecommendResponse": {
+        "properties": {
+          "code": {
+            "type": "integer",
+            "title": "Code"
+          },
+          "personal_recommendation": {
+            "type": "string",
+            "title": "Personal Recommendation"
+          },
+          "recommendation_status": {
+            "type": "string",
+            "title": "Recommendation Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "personal_recommendation",
+          "recommendation_status"
         ]
       },
       "TaskResponse": {
