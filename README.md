@@ -129,7 +129,7 @@ GET /match_result/{uuid}
 
 `package_name`是套餐名
 
-`package_content`是该套餐的原始表格内容的JSON字符串，前端需要把这部分内容渲染为表格形式，让员工可以查看套餐具体内容
+`package_content`是该套餐的原始表格内容的JSON字符串，前端需要把这部分内容渲染为表格形式，让员工可以查看或下载套餐具体内容
 
 **响应字段说明**
 
