@@ -3,47 +3,48 @@
 提供体检报告解读和套餐推荐服务的API
 
 **版本**: 1.0.0
+**最后更新**: 2025-11-28 16:27:32
 
 ## 在线访问
 
-- **API文档（重要）**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
+- **API文档（交互式）**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.html)
 - **OpenAPI规范**: [https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json](https://fanmeiya.github.io/physical-exams-api-docs/api_docs.json)
 
-## 核心变更（V2.0）
+## 核心变更说明（V2.0）
 
-1.  **新增企业上传官方套餐流程**：允许企业管理员上传包含多个套餐的Excel文件。
-2.  **个人推荐流程分离**：员工提交问卷后，系统会根据企业是否上传了官方套餐，自动进入两条互斥的推荐流程之一：
-    *   **流程A (匹配官方套餐)**: 如果企业已上传套餐，系统会为员工匹配最合适的官方套餐。
-    *   **流程B (分配AI生成套餐)**: 如果企业未上传套餐，则沿用旧逻辑，等待管理员触发AI生成套餐并为员工分配。
-3.  **新增专用接口**：为此增加了 `packages/upload`, `packages/upload/status`, 和 `match_result` 三个新接口。
+### 1. 个人推荐流程优化（重要）
+员工提交问卷后，系统会立即检测企业是否已上传官方套餐，并在响应中告知前端下一步操作。这避免了前端盲目轮询。
 
-## 工作流程详解
+*   **场景 A：企业已上传官方套餐**
+    *   `POST /health_report` 返回 `has_official_package: true`。
+    *   前端应轮询 **`GET /match_result/{uuid}`** 获取匹配结果。
+*   **场景 B：企业未上传官方套餐**
+    *   `POST /health_report` 返回 `has_official_package: false`。
+    *   前端应轮询 **`GET /recommend_result/{uuid}`** 获取AI分配结果（需等待管理员生成）。
 
-### 流程A：匹配官方套餐（企业已上传套餐）
+### 2. 新增企业套餐上传功能
+企业管理员现在可以上传官方 Excel 套餐文件，系统会自动解析并用于员工匹配。
 
-1.  **企业管理员**：调用 `POST /companies/{company_code}/packages/upload` 提交套餐Excel文件，并用 `GET /companies/{company_code}/packages/upload/status/{task_id}` 查询处理状态，直至成功。
-2.  **员工**：提交健康问卷 `POST /health_report`。
-3.  **前端**：轮询 **`GET /match_result/{uuid}`** 接口。
-4.  **后端**：
-    *   `match_status` 变为 `PROCESSING`。
-    *   匹配完成后，`match_status` 变为 `DONE`，并返回AI生成的匹配报告和该套餐的原始Excel内容。
+---
 
-### 流程B：分配AI生成套餐（企业未上传套餐）
+## 接口调用指南
 
-1.  **员工**：提交健康问卷 `POST /health_report`。
-2.  **前端**：此时轮询 `GET /match_result/{uuid}` 会得到 `match_status: "NOT_STARTED"`。
-3.  **企业管理员**：在企业端点击“生成套餐”，触发 `POST /companies/{company_code}/packages/generate`。
-4.  **后端**：为全公司员工分配AI生成的套餐。
-5.  **前端**：此时轮询 **`GET /recommend_result/{uuid}`** 接口，会发现 `assignment_status` 变为 `DONE`，并得到分配结果。
-
-**前端开发建议**：员工提交问卷后，可同时轮询 `GET /match_result/{uuid}` 和 `GET /recommend_result/{uuid}`。
-
-## 主要接口
-
-### 1. 提交健康问卷
+### 1. 提交健康问卷（已更新）
 - **接口**: `POST /health_report`
-- **说明**: 保持不变。提交问卷，启动后台分析任务。
+- **变更**: 响应体新增 `has_official_package` 字段。
+- **前端逻辑**:
+    1.  调用此接口提交问卷。
+    2.  检查响应中的 `has_official_package`。
+    3.  若为 `true`，开始轮询 `/match_result/{uuid}`。
+    4.  若为 `false`，开始轮询 `/recommend_result/{uuid}`。
 
+```json
+// 响应示例
+{
+  "message": "问卷提交成功",
+  "has_official_package": true  // true: 轮询 match_result; false: 轮询 recommend_result
+}
+```
 ### 2. 获取体检报告解读结果
 - **接口**: `GET /interpret_result/{uuid}`
 - **说明**: 保持不变。获取由AI生成的体检报告文字解读。
@@ -144,4 +145,4 @@ GET /recommend_result/{uuid}
 - **说明**: 保持不变。
 
 ---
-*最后更新时间: 2025-11-28 15:31:36*
+*最后更新时间: 2025-11-28 16:27:32*
